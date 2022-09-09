@@ -37,21 +37,21 @@ object AuthModule {
         return AuthRepositoryImpl(api, sharedPreferences)
     }
 
-    @Provides
-    @Singleton
-    fun provideRegisterUseCase(repository: AuthRepository): RegisterUseCase {
-        return RegisterUseCase(repository)
-    }
-
-    @Provides
-    @Singleton
-    fun provideLoginUseCase(repository: AuthRepository): LoginUseCase {
-        return LoginUseCase(repository)
-    }
-
-    @Provides
-    @Singleton
-    fun provideAuthenticationUseCase(repository: AuthRepository): AuthenticateUseCase {
-        return AuthenticateUseCase(repository)
-    }
+//    @Provides
+//    @Singleton
+//    fun provideRegisterUseCase(repository: AuthRepository): RegisterUseCase {
+//        return RegisterUseCase(repository)
+//    }
+//
+//    @Provides
+//    @Singleton
+//    fun provideLoginUseCase(repository: AuthRepository): LoginUseCase {
+//        return LoginUseCase(repository)
+//    }
+//
+//    @Provides
+//    @Singleton
+//    fun provideAuthenticationUseCase(repository: AuthRepository): AuthenticateUseCase {
+//        return AuthenticateUseCase(repository)
+//    }
 }

@@ -4,6 +4,7 @@
     package="com.example.socialapp">
 
     <application
+        android:name=".SocialApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"

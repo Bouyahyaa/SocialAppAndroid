@@ -20,6 +20,7 @@ class AuthRepositoryImpl @Inject constructor(
         confirmPassword: String,
     ): Resource<Unit> {
         return try {
+            Resource.Loading(null)
             val response = api.register(
                 RegisterRequest(
                     email = email,
@@ -43,6 +44,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun login(email: String, password: String): Resource<Unit> {
         return try {
+            Resource.Loading(null)
             val response = api.login(
                 LoginRequest(
                     email = email,
@@ -66,6 +68,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun authenticate(): Resource<Unit> {
         return try {
+            Resource.Loading(null)
             api.authenticate()
             Resource.Success(Unit)
         } catch (e: HttpException) {

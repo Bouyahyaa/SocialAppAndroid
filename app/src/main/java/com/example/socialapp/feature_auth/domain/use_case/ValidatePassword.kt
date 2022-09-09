@@ -1,8 +1,9 @@
 package com.example.socialapp.feature_auth.domain.use_case
 
 import com.example.socialapp.feature_auth.domain.models.ValidationResult
+import javax.inject.Inject
 
-class ValidatePassword {
+class ValidatePassword @Inject constructor() {
 
     fun execute(password: String): ValidationResult {
         if (password.length < 8) {

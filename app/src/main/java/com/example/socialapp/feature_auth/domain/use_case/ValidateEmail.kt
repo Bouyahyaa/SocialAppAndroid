@@ -4,7 +4,7 @@ import android.util.Patterns
 import com.example.socialapp.feature_auth.domain.models.ValidationResult
 import javax.inject.Inject
 
-class ValidateEmail {
+class ValidateEmail @Inject constructor() {
 
     fun execute(email: String): ValidationResult {
         if (email.isBlank()) {

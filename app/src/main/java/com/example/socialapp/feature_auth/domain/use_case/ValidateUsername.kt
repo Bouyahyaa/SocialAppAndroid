@@ -1,8 +1,9 @@
 package com.example.socialapp.feature_auth.domain.use_case
 
 import com.example.socialapp.feature_auth.domain.models.ValidationResult
+import javax.inject.Inject
 
-class ValidateUsername {
+class ValidateUsername @Inject constructor() {
     fun execute(username: String): ValidationResult {
         if (username.length < 3) {
             return ValidationResult(
