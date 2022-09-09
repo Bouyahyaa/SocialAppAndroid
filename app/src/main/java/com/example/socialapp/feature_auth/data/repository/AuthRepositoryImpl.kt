@@ -1,14 +1,15 @@
 package com.example.socialapp.feature_auth.data.repository
 
 import android.content.SharedPreferences
+import com.example.socialapp.core.util.Resource
 import com.example.socialapp.feature_auth.data.remote.AuthApi
 import com.example.socialapp.feature_auth.data.remote.request.LoginRequest
 import com.example.socialapp.feature_auth.data.remote.request.RegisterRequest
-import com.example.socialapp.feature_auth.domain.models.LoginResult
-import com.example.socialapp.feature_auth.domain.models.RegisterResult
 import com.example.socialapp.feature_auth.domain.repository.AuthRepository
+import retrofit2.HttpException
+import javax.inject.Inject
 
-class AuthRepositoryImpl(
+class AuthRepositoryImpl @Inject constructor(
     private val api: AuthApi,
     private val sharedPreferences: SharedPreferences,
 ) : AuthRepository {
@@ -17,27 +18,64 @@ class AuthRepositoryImpl(
         username: String,
         password: String,
         confirmPassword: String,
-    ): RegisterResult {
-        val request = RegisterRequest(email, username, password, confirmPassword)
-        val response = api.register(request)
-        return RegisterResult(
-            success = response.success,
-            message = response.message
-        )
+    ): Resource<Unit> {
+        return try {
+            val response = api.register(
+                RegisterRequest(
+                    email = email,
+                    username = username,
+                    password = password,
+                    confirmPassword = confirmPassword
+                )
+            )
+            if (!response.success) {
+                Resource.Error(message = response.message, null)
+            } else {
+                Resource.Success(Unit)
+            }
+        } catch (e: HttpException) {
+            Resource.Error(message = "UnknownError")
+        } catch (e: Exception) {
+            Resource.Error(message = "UnknownError")
+        }
     }
 
-    override suspend fun login(email: String, password: String): LoginResult {
-        val request = LoginRequest(email, password)
-        val response = api.login(request)
-        if (response.success) {
-            sharedPreferences.edit()
-                .putString("JWT_TOKEN", response.token)
-                .putString("USER_ID", response.userId)
-                .apply()
+
+    override suspend fun login(email: String, password: String): Resource<Unit> {
+        return try {
+            val response = api.login(
+                LoginRequest(
+                    email = email,
+                    password = password
+                )
+            )
+
+            if (!response.success) {
+                Resource.Error(message = response.message, null)
+            } else {
+                sharedPreferences.edit().putString("jwt", response.token).apply()
+                sharedPreferences.edit().putString("userId", response.userId).apply()
+                Resource.Success(Unit)
+            }
+        } catch (e: HttpException) {
+            Resource.Error(message = "UnknownError")
+        } catch (e: Exception) {
+            Resource.Error(message = "UnknownError")
         }
-        return LoginResult(
-            success = response.success,
-            message = response.message
-        )
+    }
+
+    override suspend fun authenticate(): Resource<Unit> {
+        return try {
+            api.authenticate()
+            Resource.Success(Unit)
+        } catch (e: HttpException) {
+            if (e.code() == 401) {
+                Resource.Error(message = "Unauthorized")
+            } else {
+                Resource.Error(message = "UnknownError")
+            }
+        } catch (e: Exception) {
+            Resource.Error(message = "UnknownError")
+        }
     }
 }
