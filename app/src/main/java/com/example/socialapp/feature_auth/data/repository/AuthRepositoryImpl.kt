@@ -5,6 +5,7 @@ import com.example.socialapp.core.util.Resource
 import com.example.socialapp.feature_auth.data.remote.AuthApi
 import com.example.socialapp.feature_auth.data.remote.request.LoginRequest
 import com.example.socialapp.feature_auth.data.remote.request.RegisterRequest
+import com.example.socialapp.feature_auth.data.remote.response.RegisterResponse
 import com.example.socialapp.feature_auth.domain.repository.AuthRepository
 import retrofit2.HttpException
 import javax.inject.Inject
@@ -18,27 +19,15 @@ class AuthRepositoryImpl @Inject constructor(
         username: String,
         password: String,
         confirmPassword: String,
-    ): Resource<Unit> {
-        return try {
-            Resource.Loading(Unit)
-            val response = api.register(
-                RegisterRequest(
-                    email = email,
-                    username = username,
-                    password = password,
-                    confirmPassword = confirmPassword
-                )
+    ): RegisterResponse {
+        return api.register(
+            RegisterRequest(
+                email = email,
+                username = username,
+                password = password,
+                confirmPassword = confirmPassword
             )
-            if (!response.success) {
-                Resource.Error(message = response.message)
-            } else {
-                Resource.Success(Unit)
-            }
-        } catch (e: HttpException) {
-            Resource.Error(message = e.message())
-        } catch (e: Exception) {
-            Resource.Error(message = e.message!!)
-        }
+        )
     }
 
 

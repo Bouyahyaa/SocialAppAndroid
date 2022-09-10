@@ -79,33 +79,31 @@ class RegistrationViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val registerResult = registerUseCase.invoke(
+            registerUseCase.invoke(
                 username = _state.value.username,
                 email = _state.value.email,
                 password = _state.value.password,
                 confirmPassword = _state.value.repeatedPassword
-            )
+            ).collect { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        _state.value = state.value.copy(
+                            isLoading = true,
+                        )
+                    }
 
+                    is Resource.Success -> {
+                        _state.value = state.value.copy(isLoading = false)
+                        validationEventChannel.send(ValidationEvent.Success)
+                    }
 
-            when (registerResult) {
-                is Resource.Loading -> {
-                    Log.e("Loading", "${state.value.isLoading}")
-                    _state.value = state.value.copy(
-                        isLoading = true,
-                    )
-                }
-
-                is Resource.Success -> {
-                    _state.value = state.value.copy(isLoading = false)
-                    validationEventChannel.send(ValidationEvent.Success)
-                }
-
-                is Resource.Error -> {
-                    _state.value = state.value.copy(
-                        error = registerResult.message ?: "An unexpected error occur ",
-                        isLoading = false
-                    )
-                    validationEventChannel.send(ValidationEvent.Error)
+                    is Resource.Error -> {
+                        _state.value = state.value.copy(
+                            error = result.message!!,
+                            isLoading = false
+                        )
+                        validationEventChannel.send(ValidationEvent.Error)
+                    }
                 }
             }
         }
