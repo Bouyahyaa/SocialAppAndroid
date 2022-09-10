@@ -20,7 +20,7 @@ class AuthRepositoryImpl @Inject constructor(
         confirmPassword: String,
     ): Resource<Unit> {
         return try {
-            Resource.Loading(null)
+            Resource.Loading(Unit)
             val response = api.register(
                 RegisterRequest(
                     email = email,
@@ -30,21 +30,21 @@ class AuthRepositoryImpl @Inject constructor(
                 )
             )
             if (!response.success) {
-                Resource.Error(message = response.message, null)
+                Resource.Error(message = response.message)
             } else {
                 Resource.Success(Unit)
             }
         } catch (e: HttpException) {
-            Resource.Error(message = "UnknownError")
+            Resource.Error(message = e.message())
         } catch (e: Exception) {
-            Resource.Error(message = "UnknownError")
+            Resource.Error(message = e.message!!)
         }
     }
 
 
     override suspend fun login(email: String, password: String): Resource<Unit> {
         return try {
-            Resource.Loading(null)
+            Resource.Loading(Unit)
             val response = api.login(
                 LoginRequest(
                     email = email,
@@ -53,32 +53,32 @@ class AuthRepositoryImpl @Inject constructor(
             )
 
             if (!response.success) {
-                Resource.Error(message = response.message, null)
+                Resource.Error(message = response.message)
             } else {
                 sharedPreferences.edit().putString("jwt", response.token).apply()
                 sharedPreferences.edit().putString("userId", response.userId).apply()
                 Resource.Success(Unit)
             }
         } catch (e: HttpException) {
-            Resource.Error(message = "UnknownError")
+            Resource.Error(message = e.message())
         } catch (e: Exception) {
-            Resource.Error(message = "UnknownError")
+            Resource.Error(message = e.message!!)
         }
     }
 
     override suspend fun authenticate(): Resource<Unit> {
         return try {
-            Resource.Loading(null)
+            Resource.Loading(Unit)
             api.authenticate()
             Resource.Success(Unit)
         } catch (e: HttpException) {
             if (e.code() == 401) {
                 Resource.Error(message = "Unauthorized")
             } else {
-                Resource.Error(message = "UnknownError")
+                Resource.Error(message = e.message())
             }
         } catch (e: Exception) {
-            Resource.Error(message = "UnknownError")
+            Resource.Error(message = e.message!!)
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.socialapp.feature_auth.presentation.register
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -85,22 +86,26 @@ class RegistrationViewModel @Inject constructor(
                 confirmPassword = _state.value.repeatedPassword
             )
 
+
             when (registerResult) {
                 is Resource.Loading -> {
-                    _state.value = RegistrationFormState(
+                    Log.e("Loading", "${state.value.isLoading}")
+                    _state.value = state.value.copy(
                         isLoading = true,
                     )
                 }
 
                 is Resource.Success -> {
-                    _state.value = RegistrationFormState()
+                    _state.value = state.value.copy(isLoading = false)
                     validationEventChannel.send(ValidationEvent.Success)
                 }
 
                 is Resource.Error -> {
-                    _state.value = RegistrationFormState(
+                    _state.value = state.value.copy(
                         error = registerResult.message ?: "An unexpected error occur ",
+                        isLoading = false
                     )
+                    validationEventChannel.send(ValidationEvent.Error)
                 }
             }
         }
@@ -108,5 +113,6 @@ class RegistrationViewModel @Inject constructor(
 
     sealed class ValidationEvent {
         object Success : ValidationEvent()
+        object Error : ValidationEvent()
     }
 }

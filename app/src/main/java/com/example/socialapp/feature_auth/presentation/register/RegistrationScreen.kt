@@ -33,6 +33,13 @@ fun RegistrationScreen(
                             Toast.LENGTH_LONG
                         ).show()
                     }
+
+                    is RegistrationViewModel.ValidationEvent.Error -> {
+                        Toast.makeText(context,
+                            state.error,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
             }
         }
@@ -155,6 +162,13 @@ fun RegistrationScreen(
                     viewModel.onEvent(RegistrationFormEvent.Submit)
                 }) {
                 Text(text = "Submit")
+            }
+
+            if (state.isLoading) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colors.error,
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                )
             }
         }
     }
