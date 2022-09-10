@@ -2,6 +2,7 @@ package com.example.socialapp.di
 
 import android.content.SharedPreferences
 import com.example.socialapp.feature_auth.data.remote.AuthApi
+import com.example.socialapp.feature_auth.data.remote.AuthRemoteDataSource
 import com.example.socialapp.feature_auth.data.repository.AuthRepositoryImpl
 import com.example.socialapp.feature_auth.domain.repository.AuthRepository
 import com.example.socialapp.feature_auth.domain.use_case.AuthenticateUseCase
@@ -33,7 +34,10 @@ object AuthModule {
 
     @Provides
     @Singleton
-    fun provideAuthRepository(api: AuthApi, sharedPreferences: SharedPreferences): AuthRepository {
-        return AuthRepositoryImpl(api, sharedPreferences)
+    fun provideAuthRepository(
+        authRemoteDataSource: AuthRemoteDataSource,
+        sharedPreferences: SharedPreferences,
+    ): AuthRepository {
+        return AuthRepositoryImpl(authRemoteDataSource, sharedPreferences)
     }
 }

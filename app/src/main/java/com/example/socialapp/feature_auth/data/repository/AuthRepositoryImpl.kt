@@ -1,17 +1,16 @@
 package com.example.socialapp.feature_auth.data.repository
 
 import android.content.SharedPreferences
-import com.example.socialapp.core.util.Resource
-import com.example.socialapp.feature_auth.data.remote.AuthApi
+import com.example.socialapp.feature_auth.data.remote.AuthRemoteDataSource
 import com.example.socialapp.feature_auth.data.remote.request.LoginRequest
 import com.example.socialapp.feature_auth.data.remote.request.RegisterRequest
-import com.example.socialapp.feature_auth.data.remote.response.RegisterResponse
+import com.example.socialapp.feature_auth.domain.models.LoginResult
+import com.example.socialapp.feature_auth.domain.models.RegisterResult
 import com.example.socialapp.feature_auth.domain.repository.AuthRepository
-import retrofit2.HttpException
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
-    private val api: AuthApi,
+    private val authRemoteDataSource: AuthRemoteDataSource,
     private val sharedPreferences: SharedPreferences,
 ) : AuthRepository {
     override suspend fun register(
@@ -19,8 +18,8 @@ class AuthRepositoryImpl @Inject constructor(
         username: String,
         password: String,
         confirmPassword: String,
-    ): RegisterResponse {
-        return api.register(
+    ): RegisterResult {
+        val response = authRemoteDataSource.register(
             RegisterRequest(
                 email = email,
                 username = username,
@@ -28,46 +27,35 @@ class AuthRepositoryImpl @Inject constructor(
                 confirmPassword = confirmPassword
             )
         )
+
+        return RegisterResult(
+            success = response.success,
+            message = response.message
+        )
     }
 
 
-    override suspend fun login(email: String, password: String): Resource<Unit> {
-        return try {
-            Resource.Loading(Unit)
-            val response = api.login(
-                LoginRequest(
-                    email = email,
-                    password = password
-                )
+    override suspend fun login(email: String, password: String): LoginResult {
+        val response = authRemoteDataSource.login(
+            LoginRequest(
+                email = email,
+                password = password
             )
+        )
 
-            if (!response.success) {
-                Resource.Error(message = response.message)
-            } else {
-                sharedPreferences.edit().putString("jwt", response.token).apply()
-                sharedPreferences.edit().putString("userId", response.userId).apply()
-                Resource.Success(Unit)
-            }
-        } catch (e: HttpException) {
-            Resource.Error(message = e.message())
-        } catch (e: Exception) {
-            Resource.Error(message = e.message!!)
+        if (response.success) {
+            sharedPreferences.edit().putString("jwt", response.token).apply()
+            sharedPreferences.edit().putString("userId", response.userId).apply()
         }
+        return LoginResult(
+            userId = response.userId,
+            token = response.token,
+            success = response.success,
+            message = response.message
+        )
     }
 
-    override suspend fun authenticate(): Resource<Unit> {
-        return try {
-            Resource.Loading(Unit)
-            api.authenticate()
-            Resource.Success(Unit)
-        } catch (e: HttpException) {
-            if (e.code() == 401) {
-                Resource.Error(message = "Unauthorized")
-            } else {
-                Resource.Error(message = e.message())
-            }
-        } catch (e: Exception) {
-            Resource.Error(message = e.message!!)
-        }
+    override suspend fun authenticate() {
+        return authRemoteDataSource.authenticate()
     }
 }

@@ -2,6 +2,7 @@ package com.example.socialapp.feature_auth.domain.use_case
 
 import com.example.socialapp.core.util.Resource
 import com.example.socialapp.feature_auth.data.remote.response.RegisterResponse
+import com.example.socialapp.feature_auth.domain.models.RegisterResult
 import com.example.socialapp.feature_auth.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -17,20 +18,20 @@ class RegisterUseCase @Inject constructor(
         email: String,
         password: String,
         confirmPassword: String,
-    ): Flow<Resource<RegisterResponse>> = flow {
+    ): Flow<Resource<RegisterResult>> = flow {
         try {
-            emit(Resource.Loading<RegisterResponse>())
+            emit(Resource.Loading<RegisterResult>())
             val response = repository.register(email, username, password, confirmPassword)
             if (!response.success) {
-                emit(Resource.Error<RegisterResponse>(message = response.message))
+                emit(Resource.Error<RegisterResult>(message = response.message))
             } else {
-                emit(Resource.Success<RegisterResponse>(response))
+                emit(Resource.Success<RegisterResult>(response))
             }
         } catch (e: HttpException) {
-            emit(Resource.Error<RegisterResponse>(e.localizedMessage
+            emit(Resource.Error<RegisterResult>(e.localizedMessage
                 ?: "An unexpected error occur"))
         } catch (e: IOException) {
-            emit(Resource.Error<RegisterResponse>("Couldn't reach server . Check your internet connection"))
+            emit(Resource.Error<RegisterResult>("Couldn't reach server . Check your internet connection"))
         }
     }
 }

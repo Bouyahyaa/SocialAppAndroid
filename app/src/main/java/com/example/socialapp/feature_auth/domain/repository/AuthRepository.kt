@@ -1,7 +1,7 @@
 package com.example.socialapp.feature_auth.domain.repository
 
-import com.example.socialapp.core.util.Resource
-import com.example.socialapp.feature_auth.data.remote.response.RegisterResponse
+import com.example.socialapp.feature_auth.domain.models.LoginResult
+import com.example.socialapp.feature_auth.domain.models.RegisterResult
 
 interface AuthRepository {
     suspend fun register(
@@ -9,12 +9,12 @@ interface AuthRepository {
         username: String,
         password: String,
         confirmPassword: String,
-    ): RegisterResponse
+    ): RegisterResult
 
     suspend fun login(
         email: String,
         password: String,
-    ): Resource<Unit>
+    ): LoginResult
 
-    suspend fun authenticate(): Resource<Unit>
+    suspend fun authenticate()
 }
