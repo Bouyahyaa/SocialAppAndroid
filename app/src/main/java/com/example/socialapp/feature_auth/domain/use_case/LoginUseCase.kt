@@ -5,8 +5,8 @@ import com.example.socialapp.feature_auth.domain.models.LoginResult
 import com.example.socialapp.feature_auth.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.json.JSONObject
 import retrofit2.HttpException
-import java.io.IOException
 import javax.inject.Inject
 
 class LoginUseCase @Inject constructor(
@@ -19,16 +19,14 @@ class LoginUseCase @Inject constructor(
         try {
             emit(Resource.Loading<LoginResult>())
             val response = repository.login(email, password)
-            if (!response.success) {
-                emit(Resource.Error<LoginResult>(message = response.message))
+            emit(Resource.Success<LoginResult>(response))
+        } catch (throwable: Throwable) {
+            if (throwable is HttpException) {
+                val error = JSONObject(throwable.response()?.errorBody()!!.string())
+                emit(Resource.Error<LoginResult>(message = error["message"] as String))
             } else {
-                emit(Resource.Success<LoginResult>(response))
+                emit(Resource.Error<LoginResult>(message = "Couldn't reach server . Check your internet connection"))
             }
-        } catch (e: HttpException) {
-            emit(Resource.Error<LoginResult>(e.localizedMessage
-                ?: "An unexpected error occur"))
-        } catch (e: IOException) {
-            emit(Resource.Error<LoginResult>("Couldn't reach server . Check your internet connection"))
         }
     }
 }

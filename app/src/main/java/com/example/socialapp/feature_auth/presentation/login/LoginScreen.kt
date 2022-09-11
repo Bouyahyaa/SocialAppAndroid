@@ -1,4 +1,4 @@
-package com.example.socialapp.feature_auth.presentation.register
+package com.example.socialapp.feature_auth.presentation.login
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -14,13 +14,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.socialapp.feature_auth.utils.AuthScreen
 import com.example.socialapp.feature_auth.utils.ValidationEvent
 
 @Composable
-fun RegistrationScreen(
+fun LoginScreen(
     navController: NavController,
-    viewModel: RegistrationViewModel = hiltViewModel(),
+    viewModel: LoginViewModel = hiltViewModel(),
 ) {
     Surface(modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background) {
@@ -32,10 +31,8 @@ fun RegistrationScreen(
                     is ValidationEvent.Success -> {
                         Toast.makeText(context,
                             event.message,
-                            Toast.LENGTH_SHORT
+                            Toast.LENGTH_LONG
                         ).show()
-
-                        navController.navigate(AuthScreen.LoginScreen.route)
                     }
 
                     is ValidationEvent.Error -> {
@@ -54,35 +51,11 @@ fun RegistrationScreen(
             verticalArrangement = Arrangement.Center
         ) {
 
-            // Username
-            TextField(
-                value = state.username,
-                onValueChange = {
-                    viewModel.onEvent(RegistrationFormEvent.UsernameChanged(it))
-                },
-                isError = state.usernameError != null,
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = {
-                    Text(text = "Username")
-                },
-            )
-
-            if (state.usernameError != null) {
-                Text(
-                    text = state.usernameError,
-                    color = MaterialTheme.colors.error,
-                    modifier = Modifier.align(Alignment.End),
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-
             // Email
             TextField(
                 value = state.email,
                 onValueChange = {
-                    viewModel.onEvent(RegistrationFormEvent.EmailChanged(it))
+                    viewModel.onEvent(LoginFormEvent.EmailChanged(it))
                 },
                 isError = state.emailError != null,
                 modifier = Modifier.fillMaxWidth(),
@@ -109,7 +82,7 @@ fun RegistrationScreen(
             TextField(
                 value = state.password,
                 onValueChange = {
-                    viewModel.onEvent(RegistrationFormEvent.PasswordChanged(it))
+                    viewModel.onEvent(LoginFormEvent.PasswordChanged(it))
                 },
                 isError = state.passwordError != null,
                 modifier = Modifier.fillMaxWidth(),
@@ -133,37 +106,10 @@ fun RegistrationScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
 
-            //RepeatedPassword
-            TextField(
-                value = state.repeatedPassword,
-                onValueChange = {
-                    viewModel.onEvent(RegistrationFormEvent.RepeatedPasswordChanged(it))
-                },
-                isError = state.repeatedPasswordError != null,
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = {
-                    Text(text = "Repeat Password")
-                },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password
-                ),
-                visualTransformation = PasswordVisualTransformation()
-            )
-
-            if (state.repeatedPasswordError != null) {
-                Text(
-                    text = state.repeatedPasswordError,
-                    color = MaterialTheme.colors.error,
-                    modifier = Modifier.align(Alignment.End),
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             Button(
                 modifier = Modifier.align(Alignment.End),
                 onClick = {
-                    viewModel.onEvent(RegistrationFormEvent.Submit)
+                    viewModel.onEvent(LoginFormEvent.Submit)
                 }) {
                 Text(text = "Submit")
             }
