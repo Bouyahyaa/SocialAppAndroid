@@ -88,20 +88,24 @@ class RegistrationViewModel @Inject constructor(
                     is Resource.Loading -> {
                         _state.value = state.value.copy(
                             isLoading = true,
+                            error = ""
                         )
                     }
 
                     is Resource.Success -> {
-                        _state.value = state.value.copy(isLoading = false)
-                        validationEventChannel.send(ValidationEvent.Success)
+                        _state.value = state.value.copy(
+                            isLoading = false,
+                            error = ""
+                        )
+                        validationEventChannel.send(ValidationEvent.Success(result.data?.message!!))
                     }
 
                     is Resource.Error -> {
                         _state.value = state.value.copy(
+                            isLoading = false,
                             error = result.message!!,
-                            isLoading = false
                         )
-                        validationEventChannel.send(ValidationEvent.Error)
+                        validationEventChannel.send(ValidationEvent.Error(_state.value.error))
                     }
                 }
             }
@@ -109,7 +113,7 @@ class RegistrationViewModel @Inject constructor(
     }
 
     sealed class ValidationEvent {
-        object Success : ValidationEvent()
-        object Error : ValidationEvent()
+        data class Success(val message: String) : ValidationEvent()
+        data class Error(val error: String) : ValidationEvent()
     }
 }

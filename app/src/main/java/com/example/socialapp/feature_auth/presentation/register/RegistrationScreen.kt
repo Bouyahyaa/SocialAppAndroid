@@ -29,14 +29,14 @@ fun RegistrationScreen(
                 when (event) {
                     is RegistrationViewModel.ValidationEvent.Success -> {
                         Toast.makeText(context,
-                            "Registration Successful",
+                            event.message,
                             Toast.LENGTH_LONG
                         ).show()
                     }
 
                     is RegistrationViewModel.ValidationEvent.Error -> {
                         Toast.makeText(context,
-                            state.error,
+                            event.error,
                             Toast.LENGTH_LONG
                         ).show()
                     }

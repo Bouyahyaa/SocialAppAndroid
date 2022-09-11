@@ -1,13 +1,12 @@
 package com.example.socialapp.feature_auth.domain.use_case
 
 import com.example.socialapp.core.util.Resource
-import com.example.socialapp.feature_auth.data.remote.response.RegisterResponse
 import com.example.socialapp.feature_auth.domain.models.RegisterResult
 import com.example.socialapp.feature_auth.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.json.JSONObject
 import retrofit2.HttpException
-import java.io.IOException
 import javax.inject.Inject
 
 class RegisterUseCase @Inject constructor(
@@ -22,16 +21,14 @@ class RegisterUseCase @Inject constructor(
         try {
             emit(Resource.Loading<RegisterResult>())
             val response = repository.register(email, username, password, confirmPassword)
-            if (!response.success) {
-                emit(Resource.Error<RegisterResult>(message = response.message))
+            emit(Resource.Success<RegisterResult>(response))
+        } catch (throwable: Throwable) {
+            if (throwable is HttpException) {
+                val error = JSONObject(throwable.response()?.errorBody()!!.string())
+                emit(Resource.Error<RegisterResult>(message = error["message"] as String))
             } else {
-                emit(Resource.Success<RegisterResult>(response))
+                emit(Resource.Error<RegisterResult>(message = "Couldn't reach server . Check your internet connection"))
             }
-        } catch (e: HttpException) {
-            emit(Resource.Error<RegisterResult>(e.localizedMessage
-                ?: "An unexpected error occur"))
-        } catch (e: IOException) {
-            emit(Resource.Error<RegisterResult>("Couldn't reach server . Check your internet connection"))
         }
     }
 }
