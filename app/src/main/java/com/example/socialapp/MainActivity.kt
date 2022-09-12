@@ -11,8 +11,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.socialapp.feature_auth.presentation.login.LoginScreen
-import com.example.socialapp.feature_auth.utils.AuthScreen
+import com.example.socialapp.core.util.Screen
 import com.example.socialapp.feature_auth.presentation.register.RegistrationScreen
+import com.example.socialapp.feature_auth.presentation.splash.SplashScreen
 import com.example.socialapp.ui.theme.SocialAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -28,14 +29,22 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     NavHost(
                         navController = navController,
-                        startDestination = AuthScreen.RegistrationScreen.route
+                        startDestination = Screen.SplashScreen.route
                     ) {
-                        composable(route = AuthScreen.RegistrationScreen.route) {
+                        composable(route = Screen.SplashScreen.route) {
+                            SplashScreen(navController = navController)
+                        }
+
+                        composable(route = Screen.RegistrationScreen.route) {
                             RegistrationScreen(navController = navController)
                         }
 
-                        composable(route = AuthScreen.LoginScreen.route) {
+                        composable(route = Screen.LoginScreen.route) {
                             LoginScreen(navController = navController)
+                        }
+
+                        composable(route = Screen.MainScreen.route) {
+                            MainScreen()
                         }
                     }
                 }
