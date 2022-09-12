@@ -1,45 +1,48 @@
 package com.example.socialapp.feature_auth.presentation.splash
 
 import android.util.Log
-import android.view.animation.OvershootInterpolator
-import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.socialapp.R
 import com.example.socialapp.core.util.Screen
 import com.example.socialapp.feature_auth.utils.ValidationEvent
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 
 @Composable
 fun SplashScreen(
     navController: NavController,
     viewModel: SplashViewModel = hiltViewModel(),
 ) {
-    val scale = remember {
-        Animatable(0f)
-    }
-    val overshootInterpolator = remember {
-        OvershootInterpolator(2f)
-    }
-
-    val dispatcher: CoroutineDispatcher = Dispatchers.Main
-
     val context = LocalContext.current
+
+    var startAnimation by remember {
+        mutableStateOf(false)
+    }
+
+    val alphaAnim = animateFloatAsState(
+        targetValue = if (startAnimation) 1f else 0f,
+        animationSpec = tween(
+            durationMillis = 3000
+        )
+    )
 
     LaunchedEffect(key1 = context) {
         viewModel.validationEvents.collect { event ->
@@ -47,7 +50,7 @@ fun SplashScreen(
 
                 is ValidationEvent.Success -> {
                     Log.e("Success", event.message)
-                    delay(2000L)
+                    delay(3500L)
                     navController.navigate(Screen.MainScreen.route) {
                         popUpTo(Screen.SplashScreen.route) {
                             inclusive = true
@@ -57,7 +60,7 @@ fun SplashScreen(
 
                 is ValidationEvent.Error -> {
                     Log.e("Error", event.error)
-                    delay(2000L)
+                    delay(3000L)
                     navController.navigate(Screen.LoginScreen.route) {
                         popUpTo(Screen.SplashScreen.route) {
                             inclusive = true
@@ -68,29 +71,43 @@ fun SplashScreen(
         }
     }
 
-
     LaunchedEffect(key1 = true) {
-        withContext(dispatcher) {
-            scale.animateTo(
-                targetValue = 0.5f,
-                animationSpec = tween(
-                    durationMillis = 500,
-                    easing = {
-                        overshootInterpolator.getInterpolation(it)
-                    }
-                )
-            )
-        }
+        startAnimation = true
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(brush = Brush.verticalGradient(
+                colors = listOf(
+                    Color(0xFFFA95AC),
+                    Color(0xFFF71458)
+                )
+            )),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_launcher_background),
-            contentDescription = "Logo",
-            modifier = Modifier.scale(scale.value)
+        Box(
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                modifier = Modifier
+                    .size(120.dp)
+                    .padding(10.dp)
+                    .alpha(alpha = alphaAnim.value),
+                imageVector = Icons.Default.Bento,
+                contentDescription = "Logo Icon",
+                tint = Color.White
+            )
+        }
+        Text(
+            text = " Social T Network ",
+            modifier = Modifier.alpha(alpha = alphaAnim.value),
+            color = Color.White,
+            style = TextStyle(
+                fontSize = 40.sp,
+                fontFamily = FontFamily.Cursive,
+            ),
         )
     }
 }

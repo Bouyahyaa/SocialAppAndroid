@@ -55,7 +55,11 @@ fun RegistrationScreen(
                 when (event) {
                     is ValidationEvent.Success -> {
                         Log.e("Success", event.message)
-                        navController.navigate(Screen.LoginScreen.route)
+                        navController.navigate(Screen.LoginScreen.route) {
+                            popUpTo(Screen.RegistrationScreen.route) {
+                                inclusive = true
+                            }
+                        }
                     }
 
                     is ValidationEvent.Error -> {
@@ -233,5 +237,13 @@ fun RegistrationScreen(
             dialogTitle = "Registration Error",
             dialogText = dialogText.value
         )
+
+        BackHandler {
+            navController.navigate(Screen.LoginScreen.route) {
+                popUpTo(Screen.RegistrationScreen.route) {
+                    inclusive = true
+                }
+            }
+        }
     }
 }

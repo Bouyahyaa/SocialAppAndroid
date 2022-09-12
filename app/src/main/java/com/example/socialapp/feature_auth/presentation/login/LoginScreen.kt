@@ -1,6 +1,8 @@
 package com.example.socialapp.feature_auth.presentation.login
 
+import android.content.Intent
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -8,7 +10,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -191,7 +196,11 @@ fun LoginScreen(
                     .align(Alignment.BottomCenter)
                     .padding(20.dp),
                 onClick = {
-                    navController.navigate(Screen.RegistrationScreen.route){}
+                    navController.navigate(Screen.RegistrationScreen.route) {
+                        popUpTo(Screen.LoginScreen.route) {
+                            inclusive = true
+                        }
+                    }
                 },
                 style = TextStyle(
                     color = Color.Gray,
@@ -208,5 +217,12 @@ fun LoginScreen(
             dialogTitle = "Login Error",
             dialogText = dialogText.value
         )
+
+        BackHandler {
+            val intent = Intent(Intent.ACTION_MAIN)
+            intent.addCategory(Intent.CATEGORY_HOME)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            context.startActivity(intent)
+        }
     }
 }
