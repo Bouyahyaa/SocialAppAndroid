@@ -6,10 +6,9 @@ import com.example.socialapp.feature_auth.data.remote.request.LoginRequest
 import com.example.socialapp.feature_auth.data.remote.request.RegisterRequest
 import com.example.socialapp.feature_auth.data.remote.request.TokenRequest
 import com.example.socialapp.feature_auth.domain.models.LoginResult
-import com.example.socialapp.feature_auth.domain.models.RegisterResult
-import com.example.socialapp.feature_auth.domain.models.TokenResult
 import com.example.socialapp.feature_auth.domain.repository.AuthRepository
 import javax.inject.Inject
+import com.example.socialapp.core.util.Result
 
 class AuthRepositoryImpl @Inject constructor(
     private val authRemoteDataSource: AuthRemoteDataSource,
@@ -20,7 +19,7 @@ class AuthRepositoryImpl @Inject constructor(
         username: String,
         password: String,
         confirmPassword: String,
-    ): RegisterResult {
+    ): Result {
         val response = authRemoteDataSource.register(
             RegisterRequest(
                 email = email,
@@ -30,7 +29,7 @@ class AuthRepositoryImpl @Inject constructor(
             )
         )
 
-        return RegisterResult(
+        return Result(
             success = response.success,
             message = response.message
         )
@@ -57,7 +56,7 @@ class AuthRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun confirmEmail(code: String, email: String): TokenResult {
+    override suspend fun confirmEmail(code: String, email: String): Result {
         val response = authRemoteDataSource.confirmEmail(
             request = TokenRequest(
                 code = code
@@ -65,7 +64,16 @@ class AuthRepositoryImpl @Inject constructor(
             email = email
         )
 
-        return TokenResult(
+        return Result(
+            success = response.success,
+            message = response.message
+        )
+    }
+
+    override suspend fun resendCode(email: String): Result {
+        val response = authRemoteDataSource.resendCode(email = email)
+
+        return Result(
             success = response.success,
             message = response.message
         )

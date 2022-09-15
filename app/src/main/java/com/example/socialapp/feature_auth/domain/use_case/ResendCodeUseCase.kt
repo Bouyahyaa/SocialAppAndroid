@@ -9,16 +9,15 @@ import org.json.JSONObject
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class ConfirmationUseCase @Inject constructor(
+class ResendCodeUseCase @Inject constructor(
     private val repository: AuthRepository,
 ) {
     suspend operator fun invoke(
-        code: String,
         email: String,
     ): Flow<Resource<Result>> = flow {
         try {
             emit(Resource.Loading<Result>())
-            val response = repository.confirmEmail(code, email)
+            val response = repository.resendCode(email)
             emit(Resource.Success<Result>(response))
         } catch (throwable: Throwable) {
             if (throwable is HttpException) {

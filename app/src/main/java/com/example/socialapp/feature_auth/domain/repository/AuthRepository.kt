@@ -1,8 +1,7 @@
 package com.example.socialapp.feature_auth.domain.repository
 
 import com.example.socialapp.feature_auth.domain.models.LoginResult
-import com.example.socialapp.feature_auth.domain.models.RegisterResult
-import com.example.socialapp.feature_auth.domain.models.TokenResult
+import com.example.socialapp.core.util.Result
 
 interface AuthRepository {
     suspend fun register(
@@ -10,7 +9,7 @@ interface AuthRepository {
         username: String,
         password: String,
         confirmPassword: String,
-    ): RegisterResult
+    ): Result
 
     suspend fun login(
         email: String,
@@ -20,7 +19,11 @@ interface AuthRepository {
     suspend fun confirmEmail(
         code: String,
         email: String,
-    ): TokenResult
+    ): Result
+
+    suspend fun resendCode(
+        email: String,
+    ): Result
 
     suspend fun authenticate()
 }

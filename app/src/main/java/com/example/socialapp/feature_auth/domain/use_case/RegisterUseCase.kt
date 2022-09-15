@@ -1,11 +1,11 @@
 package com.example.socialapp.feature_auth.domain.use_case
 
 import com.example.socialapp.core.util.Resource
-import com.example.socialapp.feature_auth.domain.models.RegisterResult
 import com.example.socialapp.feature_auth.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.json.JSONObject
+import com.example.socialapp.core.util.Result
 import retrofit2.HttpException
 import javax.inject.Inject
 
@@ -17,17 +17,17 @@ class RegisterUseCase @Inject constructor(
         email: String,
         password: String,
         confirmPassword: String,
-    ): Flow<Resource<RegisterResult>> = flow {
+    ): Flow<Resource<Result>> = flow {
         try {
-            emit(Resource.Loading<RegisterResult>())
+            emit(Resource.Loading<Result>())
             val response = repository.register(email, username, password, confirmPassword)
-            emit(Resource.Success<RegisterResult>(response))
+            emit(Resource.Success<Result>(response))
         } catch (throwable: Throwable) {
             if (throwable is HttpException) {
                 val error = JSONObject(throwable.response()?.errorBody()!!.string())
-                emit(Resource.Error<RegisterResult>(message = error["message"] as String))
+                emit(Resource.Error<Result>(message = error["message"] as String))
             } else {
-                emit(Resource.Error<RegisterResult>(message = "Couldn't reach server . Check your internet connection"))
+                emit(Resource.Error<Result>(message = "Couldn't reach server . Check your internet connection"))
             }
         }
     }
