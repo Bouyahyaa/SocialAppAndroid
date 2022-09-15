@@ -49,13 +49,12 @@ fun RegistrationScreen(
     Surface(modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background) {
         val state = viewModel.state.value
-        val context = LocalContext.current
-        LaunchedEffect(key1 = context) {
+        LaunchedEffect(key1 = state) {
             viewModel.validationEvents.collect { event ->
                 when (event) {
                     is ValidationEvent.Success -> {
                         Log.e("Success", event.message)
-                        navController.navigate(Screen.LoginScreen.route) {
+                        navController.navigate(Screen.ConfirmationScreen.route + "/${state.email}") {
                             popUpTo(Screen.RegistrationScreen.route) {
                                 inclusive = true
                             }

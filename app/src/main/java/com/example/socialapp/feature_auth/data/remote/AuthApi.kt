@@ -2,11 +2,14 @@ package com.example.socialapp.feature_auth.data.remote
 
 import com.example.socialapp.feature_auth.data.remote.request.LoginRequest
 import com.example.socialapp.feature_auth.data.remote.request.RegisterRequest
+import com.example.socialapp.feature_auth.data.remote.request.TokenRequest
 import com.example.socialapp.feature_auth.data.remote.response.LoginResponse
 import com.example.socialapp.feature_auth.data.remote.response.RegisterResponse
+import com.example.socialapp.feature_auth.data.remote.response.TokenResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface AuthApi {
     @POST("/api/users/register")
@@ -18,6 +21,12 @@ interface AuthApi {
     suspend fun login(
         @Body request: LoginRequest,
     ): LoginResponse
+
+    @POST("/api/users/confirmation/{email}")
+    suspend fun confirmEmail(
+        @Body request: TokenRequest,
+        @Path("email") email: String,
+    ): TokenResponse
 
     @GET("/api/users/authenticate")
     suspend fun authenticate()

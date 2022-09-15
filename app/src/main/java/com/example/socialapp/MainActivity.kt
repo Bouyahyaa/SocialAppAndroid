@@ -7,11 +7,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.socialapp.feature_auth.presentation.login.LoginScreen
 import com.example.socialapp.core.util.Screen
+import com.example.socialapp.feature_auth.presentation.confirmation.ConfirmationScreen
 import com.example.socialapp.feature_auth.presentation.register.RegistrationScreen
 import com.example.socialapp.feature_auth.presentation.splash.SplashScreen
 import com.example.socialapp.ui.theme.SocialAppTheme
@@ -41,6 +44,18 @@ class MainActivity : ComponentActivity() {
 
                         composable(route = Screen.LoginScreen.route) {
                             LoginScreen(navController = navController)
+                        }
+
+                        composable(route = Screen.ConfirmationScreen.route + "/{email}",
+                            arguments = listOf(
+                                navArgument("email") {
+                                    type = NavType.StringType
+                                    defaultValue = ""
+                                    nullable = true
+                                },
+                            )
+                        ) {
+                            ConfirmationScreen(navController = navController)
                         }
 
                         composable(route = Screen.MainScreen.route) {
