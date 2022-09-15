@@ -5,6 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -17,9 +18,15 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.*
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.socialapp.R
@@ -31,6 +38,7 @@ import com.example.socialapp.feature_auth.utils.ValidationEvent
 @Composable
 fun ConfirmationScreen(
     navController: NavController,
+    email: String?,
     viewModel: ConfirmationViewModel = hiltViewModel(),
 ) {
     val openDialog = remember { mutableStateOf(false) }
@@ -64,9 +72,49 @@ fun ConfirmationScreen(
 
         Column(
             modifier = Modifier.padding(20.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center
         ) {
+
+            Image(
+                painterResource(id = R.drawable.email),
+                contentDescription = "Confirm button icon",
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text(
+                text = AnnotatedString("Verify your email"),
+                style = TextStyle(
+                    fontSize = 17.sp,
+                    fontFamily = FontFamily.Default,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.DarkGray
+                )
+            )
+
+            Spacer(modifier = Modifier.height(15.dp))
+
+            Text(
+                text = AnnotatedString("Please enter the 5 digit code sent to"),
+                style = TextStyle(
+                    fontSize = 17.sp,
+                    fontFamily = FontFamily.Default,
+                    color = Color.DarkGray
+                )
+            )
+            Text(
+                text = AnnotatedString("your email : $email"),
+                style = TextStyle(
+                    fontSize = 17.sp,
+                    fontFamily = FontFamily.Default,
+                    color = Color.DarkGray
+                )
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
 
 
             // Code
@@ -85,7 +133,6 @@ fun ConfirmationScreen(
             )
 
             Spacer(modifier = Modifier.height(20.dp))
-
 
             Box(modifier = Modifier.padding(30.dp, 0.dp, 30.dp, 0.dp)) {
                 Button(
@@ -109,11 +156,12 @@ fun ConfirmationScreen(
                         .height(50.dp),
                 ) {
                     Image(
-                        painterResource(id = R.drawable.baseline_login_24),
+                        painterResource(id = R.drawable.baseline_mark_email_read_24),
                         contentDescription = "Confirm button icon",
                         modifier = Modifier.size(20.dp)
                     )
-                    Text(text = "Confirm",
+                    Text(
+                        text = "Confirm",
                         modifier = Modifier.padding(
                             start = 10.dp,
                             bottom = 2.dp
@@ -130,6 +178,35 @@ fun ConfirmationScreen(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                 )
             }
+        }
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            ClickableText(
+                text = buildAnnotatedString {
+                    append("Didn't receive a code ? ")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Black,
+                            fontSize = 17.sp
+                        )
+                    ) {
+                        append("Resend")
+                    }
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(20.dp),
+                onClick = {
+
+                },
+                style = TextStyle(
+                    color = Color.Gray,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontStyle = FontStyle.Italic,
+                    textAlign = TextAlign.Center,
+                )
+            )
         }
 
         AlertDialogSample(

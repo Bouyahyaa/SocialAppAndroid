@@ -54,8 +54,11 @@ class MainActivity : ComponentActivity() {
                                     nullable = true
                                 },
                             )
-                        ) {
-                            ConfirmationScreen(navController = navController)
+                        ) { entry ->
+                            ConfirmationScreen(
+                                navController = navController,
+                                email = entry.arguments?.getString("email")!!,
+                            )
                         }
 
                         composable(route = Screen.MainScreen.route) {
