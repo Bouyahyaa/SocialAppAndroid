@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.socialapp.core.util.Resource
 import com.example.socialapp.feature_auth.domain.use_case.ConfirmationUseCase
+import com.example.socialapp.feature_auth.domain.use_case.ResendCodeUseCase
 import com.example.socialapp.feature_auth.domain.use_case.ValidateToken
 import com.example.socialapp.feature_auth.utils.ValidationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ConfirmationViewModel @Inject constructor(
     private val confirmationUseCase: ConfirmationUseCase,
+    private val resendCodeUseCase: ResendCodeUseCase,
     private val validateToken: ValidateToken,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -25,8 +27,12 @@ class ConfirmationViewModel @Inject constructor(
     private val _state = mutableStateOf(ConfirmationFormState())
     val state: State<ConfirmationFormState> = _state
     val email = savedStateHandle.get<String>("email")
-    private val validationEventChannel = Channel<ValidationEvent>()
-    val validationEvents = validationEventChannel.receiveAsFlow()
+
+    private val confirmationValidationEventChannel = Channel<ValidationEvent>()
+    val confirmationValidationEvents = confirmationValidationEventChannel.receiveAsFlow()
+
+    private val resendValidationEventChannel = Channel<ValidationEvent>()
+    val resendValidationEvents = resendValidationEventChannel.receiveAsFlow()
 
     fun onEvent(event: ConfirmationFormEvent) {
         when (event) {
@@ -35,8 +41,45 @@ class ConfirmationViewModel @Inject constructor(
                 _state.value = state.value.copy(code = event.code)
             }
 
+            is ConfirmationFormEvent.ResendCode -> {
+                resendCode()
+            }
+
             is ConfirmationFormEvent.Submit -> {
                 submitData()
+            }
+        }
+    }
+
+    private fun resendCode() {
+        viewModelScope.launch {
+            resendCodeUseCase.invoke(
+                email = email!!,
+            ).collect { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        _state.value = state.value.copy(
+                            isLoading = true,
+                            error = ""
+                        )
+                    }
+
+                    is Resource.Success -> {
+                        _state.value = state.value.copy(
+                            isLoading = false,
+                            error = ""
+                        )
+                        resendValidationEventChannel.send(ValidationEvent.Success(result.data?.message!!))
+                    }
+
+                    is Resource.Error -> {
+                        _state.value = state.value.copy(
+                            isLoading = false,
+                            error = result.message!!,
+                        )
+                        resendValidationEventChannel.send(ValidationEvent.Error(_state.value.error))
+                    }
+                }
             }
         }
     }
@@ -75,7 +118,7 @@ class ConfirmationViewModel @Inject constructor(
                             isLoading = false,
                             error = ""
                         )
-                        validationEventChannel.send(ValidationEvent.Success(result.data?.message!!))
+                        confirmationValidationEventChannel.send(ValidationEvent.Success(result.data?.message!!))
                     }
 
                     is Resource.Error -> {
@@ -83,7 +126,7 @@ class ConfirmationViewModel @Inject constructor(
                             isLoading = false,
                             error = result.message!!,
                         )
-                        validationEventChannel.send(ValidationEvent.Error(_state.value.error))
+                        confirmationValidationEventChannel.send(ValidationEvent.Error(_state.value.error))
                     }
                 }
             }

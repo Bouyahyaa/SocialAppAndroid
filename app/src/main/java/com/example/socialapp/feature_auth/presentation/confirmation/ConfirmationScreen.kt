@@ -33,6 +33,8 @@ import com.example.socialapp.R
 import com.example.socialapp.core.util.Screen
 import com.example.socialapp.feature_auth.presentation.components.AlertDialogSample
 import com.example.socialapp.feature_auth.presentation.components.TextFieldAuth
+import com.example.socialapp.feature_auth.presentation.confirmation.components.ConfirmationDialog
+import com.example.socialapp.feature_auth.presentation.confirmation.components.ResendCodeDialog
 import com.example.socialapp.feature_auth.utils.ValidationEvent
 
 @Composable
@@ -41,96 +43,90 @@ fun ConfirmationScreen(
     email: String?,
     viewModel: ConfirmationViewModel = hiltViewModel(),
 ) {
-    val openDialog = remember { mutableStateOf(false) }
+    val openDialogError = remember { mutableStateOf(false) }
+    val dialogTextError = remember { mutableStateOf("") }
 
-    val dialogText = remember { mutableStateOf("") }
+    val openDialogConfirmation = remember { mutableStateOf(false) }
+    val openDialogResend = remember { mutableStateOf(false) }
 
-    Surface(modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colors.background) {
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
         val state = viewModel.state.value
         val context = LocalContext.current
+
         LaunchedEffect(key1 = context) {
-            viewModel.validationEvents.collect { event ->
+            viewModel.confirmationValidationEvents.collect { event ->
                 when (event) {
 
                     is ValidationEvent.Success -> {
                         Log.e("Success", event.message)
-                        navController.navigate(Screen.LoginScreen.route) {
-                            popUpTo(Screen.ConfirmationScreen.route) {
-                                inclusive = true
-                            }
-                        }
+                        openDialogConfirmation.value = true
                     }
 
                     is ValidationEvent.Error -> {
-                        dialogText.value = event.error
-                        openDialog.value = true
+                        dialogTextError.value = event.error
+                        openDialogError.value = true
                     }
                 }
             }
         }
 
-        Column(
-            modifier = Modifier.padding(20.dp),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Center
-        ) {
+        LaunchedEffect(key1 = context) {
+            viewModel.resendValidationEvents.collect { event ->
+                when (event) {
 
-            Image(
-                painterResource(id = R.drawable.email),
+                    is ValidationEvent.Success -> {
+                        Log.e("SuccessResend", event.message)
+                        openDialogResend.value = true
+                    }
+
+                    is ValidationEvent.Error -> {
+                        dialogTextError.value = event.error
+                        openDialogError.value = true
+                    }
+                }
+            }
+        }
+
+        Column(modifier = Modifier.padding(20.dp),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center) {
+
+            Image(painterResource(id = R.drawable.email),
                 contentDescription = "Confirm button icon",
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
+                modifier = Modifier.fillMaxWidth())
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            Text(
-                text = AnnotatedString("Verify your email"),
-                style = TextStyle(
-                    fontSize = 17.sp,
+            Text(text = AnnotatedString("Verify your email"),
+                style = TextStyle(fontSize = 17.sp,
                     fontFamily = FontFamily.Default,
                     fontWeight = FontWeight.Bold,
-                    color = Color.DarkGray
-                )
-            )
+                    color = Color.DarkGray))
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            Text(
-                text = AnnotatedString("Please enter the 5 digit code sent to"),
-                style = TextStyle(
-                    fontSize = 17.sp,
+            Text(text = AnnotatedString("Please enter the 5 digit code sent to"),
+                style = TextStyle(fontSize = 17.sp,
                     fontFamily = FontFamily.Default,
-                    color = Color.DarkGray
-                )
-            )
-            Text(
-                text = AnnotatedString("your email : $email"),
-                style = TextStyle(
-                    fontSize = 17.sp,
+                    color = Color.DarkGray))
+            Text(text = AnnotatedString("your email : $email"),
+                style = TextStyle(fontSize = 17.sp,
                     fontFamily = FontFamily.Default,
-                    color = Color.DarkGray
-                )
-            )
+                    color = Color.DarkGray))
 
             Spacer(modifier = Modifier.height(20.dp))
 
 
             // Code
-            TextFieldAuth(
-                modifier = Modifier.align(Alignment.End),
+            TextFieldAuth(modifier = Modifier.align(Alignment.End),
                 currentState = state.code,
                 currentStatePlaceHolder = "Code",
                 currentStateError = state.codeError,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text
-                ),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                 visualTransformation = VisualTransformation.None,
                 onValueChange = {
                     viewModel.onEvent(ConfirmationFormEvent.CodeChanged(it))
-                }
-            )
+                })
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -140,64 +136,48 @@ fun ConfirmationScreen(
                         viewModel.onEvent(ConfirmationFormEvent.Submit)
                     },
                     shape = RoundedCornerShape(50.dp),
-                    border = BorderStroke(
-                        1.dp,
+                    border = BorderStroke(1.dp,
                         Brush.horizontalGradient(
-                            colors = listOf(
-                                Color(0xFFF71458),
-                                Color(0xFFFA95AC)
-                            ),
+                            colors = listOf(Color(0xFFF71458), Color(0xFFFA95AC)),
                         )),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = Color.Black
-                    ),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Black),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
                 ) {
-                    Image(
-                        painterResource(id = R.drawable.baseline_mark_email_read_24),
+                    Image(painterResource(id = R.drawable.baseline_mark_email_read_24),
                         contentDescription = "Confirm button icon",
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Text(
-                        text = "Confirm",
-                        modifier = Modifier.padding(
-                            start = 10.dp,
-                            bottom = 2.dp
-                        )
-                    )
+                        modifier = Modifier.size(20.dp))
+                    Text(text = "Confirm",
+                        modifier = Modifier.padding(start = 10.dp, bottom = 2.dp))
                 }
             }
 
-            Spacer(modifier = Modifier.height(25.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             if (state.isLoading) {
-                CircularProgressIndicator(
-                    color = MaterialTheme.colors.error,
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                LinearProgressIndicator(
+                    color = MaterialTheme.colors.onSecondary,
+                    backgroundColor = Color.LightGray,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .height(5.dp),
                 )
             }
         }
 
         Box(modifier = Modifier.fillMaxSize()) {
-            ClickableText(
-                text = buildAnnotatedString {
-                    append("Didn't receive a code ? ")
-                    withStyle(
-                        style = SpanStyle(
-                            color = Color.Black,
-                            fontSize = 17.sp
-                        )
-                    ) {
-                        append("Resend")
-                    }
-                },
+            ClickableText(text = buildAnnotatedString {
+                append("Didn't receive a code ? ")
+                withStyle(style = SpanStyle(color = Color.Black, fontSize = 17.sp)) {
+                    append("Resend")
+                }
+            },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(20.dp),
                 onClick = {
-
+                    viewModel.onEvent(ConfirmationFormEvent.ResendCode)
                 },
                 style = TextStyle(
                     color = Color.Gray,
@@ -205,14 +185,28 @@ fun ConfirmationScreen(
                     fontWeight = FontWeight.Bold,
                     fontStyle = FontStyle.Italic,
                     textAlign = TextAlign.Center,
-                )
-            )
+                ))
         }
 
         AlertDialogSample(
-            openDialog = openDialog,
+            openDialog = openDialogError,
             dialogTitle = "Confirmation Error",
-            dialogText = dialogText.value
+            dialogText = dialogTextError.value
+        )
+
+        ConfirmationDialog(
+            openDialogCustom = openDialogConfirmation,
+            onButtonClick = {
+                navController.navigate(Screen.LoginScreen.route) {
+                    popUpTo(Screen.ConfirmationScreen.route) {
+                        inclusive = true
+                    }
+                }
+            }
+        )
+
+        ResendCodeDialog(
+            openDialogCustom = openDialogResend,
         )
     }
 }

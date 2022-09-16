@@ -188,12 +188,15 @@ fun RegistrationScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(25.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             if (state.isLoading) {
-                CircularProgressIndicator(
-                    color = MaterialTheme.colors.error,
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                LinearProgressIndicator(
+                    color = MaterialTheme.colors.onSecondary,
+                    backgroundColor = Color.LightGray,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .height(5.dp),
                 )
             }
         }
