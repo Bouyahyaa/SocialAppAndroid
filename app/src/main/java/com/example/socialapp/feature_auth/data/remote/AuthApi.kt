@@ -3,6 +3,7 @@ package com.example.socialapp.feature_auth.data.remote
 import com.example.socialapp.core.util.Response
 import com.example.socialapp.feature_auth.data.remote.request.LoginRequest
 import com.example.socialapp.feature_auth.data.remote.request.RegisterRequest
+import com.example.socialapp.feature_auth.data.remote.request.ResetPasswordRequest
 import com.example.socialapp.feature_auth.data.remote.request.TokenRequest
 import com.example.socialapp.feature_auth.data.remote.response.LoginResponse
 import retrofit2.http.Body
@@ -29,6 +30,23 @@ interface AuthApi {
 
     @POST("/api/users/resendCode/{email}")
     suspend fun resendCode(
+        @Path("email") email: String,
+    ): Response
+
+    @POST("/api/users/forgetPassword/{email}")
+    suspend fun forgetPassword(
+        @Path("email") email: String,
+    ): Response
+
+    @POST("/api/users/verifyTokenPassword/{email}")
+    suspend fun verifyTokenPassword(
+        @Body request: TokenRequest,
+        @Path("email") email: String,
+    ): Response
+
+    @POST("/api/users/resetPassword/{email}")
+    suspend fun resetPassword(
+        @Body request: ResetPasswordRequest,
         @Path("email") email: String,
     ): Response
 

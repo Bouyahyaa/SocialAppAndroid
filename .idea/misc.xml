@@ -4,10 +4,14 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable/baseline_arrow_back_24.xml" value="0.1635" />
+        <entry key="app/src/main/res/drawable/baseline_autorenew_24.xml" value="0.2605" />
         <entry key="app/src/main/res/drawable/baseline_how_to_reg_24.xml" value="0.1635" />
+        <entry key="app/src/main/res/drawable/baseline_lock_24.xml" value="0.328" />
+        <entry key="app/src/main/res/drawable/baseline_lock_open_24.xml" value="0.328" />
         <entry key="app/src/main/res/drawable/baseline_login_24.xml" value="0.1405" />
         <entry key="app/src/main/res/drawable/baseline_mark_email_read_24.xml" value="0.2605" />
         <entry key="app/src/main/res/drawable/baseline_mark_email_unread_24.xml" value="0.328" />
+        <entry key="app/src/main/res/drawable/baseline_phonelink_lock_24.xml" value="0.328" />
         <entry key="app/src/main/res/xml/network_security_config.xml" value="0.1" />
       </map>
     </option>

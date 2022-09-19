@@ -25,5 +25,20 @@ interface AuthRepository {
         email: String,
     ): Result
 
+    suspend fun forgetPassword(
+        email: String,
+    ): Result
+
+    suspend fun verifyTokenPassword(
+        code: String,
+        email: String,
+    ): Result
+
+    suspend fun resetPassword(
+        email: String,
+        password: String,
+        confirmPassword: String,
+    ): Result
+
     suspend fun authenticate()
 }

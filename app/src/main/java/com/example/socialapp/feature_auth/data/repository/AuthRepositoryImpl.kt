@@ -9,6 +9,7 @@ import com.example.socialapp.feature_auth.domain.models.LoginResult
 import com.example.socialapp.feature_auth.domain.repository.AuthRepository
 import javax.inject.Inject
 import com.example.socialapp.core.util.Result
+import com.example.socialapp.feature_auth.data.remote.request.ResetPasswordRequest
 
 class AuthRepositoryImpl @Inject constructor(
     private val authRemoteDataSource: AuthRemoteDataSource,
@@ -72,6 +73,47 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun resendCode(email: String): Result {
         val response = authRemoteDataSource.resendCode(email = email)
+
+        return Result(
+            success = response.success,
+            message = response.message
+        )
+    }
+
+    override suspend fun forgetPassword(email: String): Result {
+        val response = authRemoteDataSource.forgetPassword(email = email)
+        return Result(
+            success = response.success,
+            message = response.message
+        )
+    }
+
+    override suspend fun verifyTokenPassword(code: String, email: String): Result {
+        val response = authRemoteDataSource.verifyTokenPassword(
+            request = TokenRequest(
+                code = code
+            ),
+            email = email
+        )
+
+        return Result(
+            success = response.success,
+            message = response.message
+        )
+    }
+
+    override suspend fun resetPassword(
+        email: String,
+        password: String,
+        confirmPassword: String,
+    ): Result {
+        val response = authRemoteDataSource.resetPassword(
+            ResetPasswordRequest(
+                password = password,
+                confirmPassword = confirmPassword
+            ),
+            email = email
+        )
 
         return Result(
             success = response.success,

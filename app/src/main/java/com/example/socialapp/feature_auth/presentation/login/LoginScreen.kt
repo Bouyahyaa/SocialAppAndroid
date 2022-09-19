@@ -1,7 +1,11 @@
 package com.example.socialapp.feature_auth.presentation.login
 
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.util.Log
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -10,10 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -30,6 +31,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.socialapp.R
@@ -37,10 +39,16 @@ import com.example.socialapp.core.util.Screen
 import com.example.socialapp.feature_auth.presentation.components.AlertDialogSample
 import com.example.socialapp.feature_auth.presentation.components.TextFieldAuth
 import com.example.socialapp.feature_auth.utils.ValidationEvent
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
+import com.google.android.exoplayer2.ui.StyledPlayerView
 
 @Composable
 fun LoginScreen(
     navController: NavController,
+    videoUri: Uri,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val openDialog = remember { mutableStateOf(false) }
@@ -51,6 +59,8 @@ fun LoginScreen(
         color = MaterialTheme.colors.background) {
         val state = viewModel.state.value
         val context = LocalContext.current
+        val exoPlayer = remember { context.buildExoPlayer(videoUri) }
+
         LaunchedEffect(key1 = context) {
             viewModel.validationEvents.collect { event ->
                 when (event) {
@@ -95,7 +105,7 @@ fun LoginScreen(
                 currentStatePlaceHolder = "Email",
                 currentStateError = state.emailError,
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email
+                    keyboardType = KeyboardType.Email,
                 ),
                 visualTransformation = VisualTransformation.None,
                 onValueChange = {
@@ -161,7 +171,13 @@ fun LoginScreen(
 
             ClickableText(
                 text = AnnotatedString("Forgot password ?"),
-                onClick = { },
+                onClick = {
+                    navController.navigate(Screen.ForgetPasswordScreen.route) {
+                        popUpTo(Screen.LoginScreen.route) {
+                            inclusive = true
+                        }
+                    }
+                },
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontFamily = FontFamily.Default,
@@ -229,3 +245,20 @@ fun LoginScreen(
         }
     }
 }
+
+private fun Context.buildExoPlayer(uri: Uri) =
+    ExoPlayer.Builder(this).build().apply {
+        setMediaItem(MediaItem.fromUri(uri))
+        repeatMode = Player.REPEAT_MODE_ALL
+        playWhenReady = true
+        prepare()
+    }
+
+private fun Context.buildPlayerView(exoPlayer: ExoPlayer) =
+    StyledPlayerView(this).apply {
+        player = exoPlayer
+        layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT)
+        useController = false
+        resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+    }
