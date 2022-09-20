@@ -4,18 +4,18 @@ import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
@@ -24,6 +24,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -71,20 +73,6 @@ fun ResetPasswordScreen(
             }
         }
 
-        LaunchedEffect(sheetState.currentValue) {
-            when (sheetState.currentValue) {
-
-                BottomSheetValue.Expanded -> {
-                }
-
-                BottomSheetValue.Collapsed -> {
-                }
-                else -> {
-                    Log.i("Bottom Sheet State", "Bottom Sheet State")
-                }
-            }
-        }
-
         BottomSheetScaffold(
             scaffoldState = scaffoldState,
             sheetContent = {
@@ -93,16 +81,68 @@ fun ResetPasswordScreen(
                     .height(300.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "Bottom Sheet",
-                        fontSize = 60.sp
-                    )
+                    Column(Modifier.background(Color.White)) {
+                        Image(
+                            painter = painterResource(id = R.drawable.baseline_login_24),
+                            contentDescription = null, // decorative
+                            contentScale = ContentScale.Fit,
+                            colorFilter = ColorFilter.tint(color = Color(0xFFFA95AC)),
+                            modifier = Modifier
+                                .padding(top = 35.dp)
+                                .height(70.dp)
+                                .fillMaxWidth(),
+
+                            )
+
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = "Done!",
+                                fontWeight = FontWeight.ExtraBold,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .padding(top = 5.dp)
+                                    .fillMaxWidth(),
+                                style = MaterialTheme.typography.h6,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = "Yahoo! You can now Log In with your new password",
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .padding(top = 10.dp, start = 25.dp, end = 25.dp)
+                                    .fillMaxWidth(),
+                                style = MaterialTheme.typography.body1
+                            )
+                        }
+
+                        Row(Modifier
+                            .fillMaxWidth()
+                            .padding(top = 10.dp)
+                            .background(brush = Brush.horizontalGradient(
+                                colors = listOf(Color(0xFFF71458), Color(0xFFFA95AC)),
+                            )), horizontalArrangement = Arrangement.SpaceAround) {
+
+                            TextButton(onClick = {
+                                navController.navigate(Screen.LoginScreen.route) {
+                                    popUpTo(Screen.ResetPassword.route) {
+                                        inclusive = true
+                                    }
+                                }
+                            }) {
+                                Text("Log In",
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = Color.White,
+                                    modifier = Modifier.padding(top = 5.dp, bottom = 5.dp))
+                            }
+                        }
+                    }
                 }
             },
-            sheetBackgroundColor = Color.DarkGray,
-            sheetPeekHeight = 0.dp,
+            sheetBackgroundColor = Color.White,
             sheetShape = RoundedCornerShape(20.dp),
             sheetElevation = 20.dp,
+            sheetPeekHeight = 0.dp,
             sheetGesturesEnabled = false,
         ) {
             Column(modifier = Modifier.padding(20.dp),
