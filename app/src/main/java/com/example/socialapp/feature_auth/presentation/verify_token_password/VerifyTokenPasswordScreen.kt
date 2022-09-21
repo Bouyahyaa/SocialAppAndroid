@@ -156,7 +156,7 @@ fun VerifyTokenPasswordScreen(
         VerifyTokenPasswordDialog(
             openDialogCustom = openDialogVerifyTokenPassword,
             onButtonClick = {
-                navController.navigate(Screen.ResetPassword.route + "/${email}") {
+                navController.navigate(Screen.ResetPasswordScreen.route + "/${email}") {
                     popUpTo(Screen.VerifyTokenPassword.route + "/${email}") {
                         inclusive = true
                     }

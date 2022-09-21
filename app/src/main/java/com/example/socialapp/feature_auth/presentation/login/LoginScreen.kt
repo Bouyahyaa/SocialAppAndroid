@@ -31,7 +31,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.socialapp.R
@@ -39,6 +38,7 @@ import com.example.socialapp.core.util.Screen
 import com.example.socialapp.feature_auth.presentation.components.AlertDialogSample
 import com.example.socialapp.feature_auth.presentation.components.TextFieldAuth
 import com.example.socialapp.feature_auth.utils.ValidationEvent
+import com.example.socialapp.graphs.Graph
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
@@ -48,7 +48,6 @@ import com.google.android.exoplayer2.ui.StyledPlayerView
 @Composable
 fun LoginScreen(
     navController: NavController,
-    videoUri: Uri,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val openDialog = remember { mutableStateOf(false) }
@@ -59,7 +58,6 @@ fun LoginScreen(
         color = MaterialTheme.colors.background) {
         val state = viewModel.state.value
         val context = LocalContext.current
-        val exoPlayer = remember { context.buildExoPlayer(videoUri) }
 
         LaunchedEffect(key1 = context) {
             viewModel.validationEvents.collect { event ->
@@ -67,11 +65,7 @@ fun LoginScreen(
 
                     is ValidationEvent.Success -> {
                         Log.e("Success", event.message)
-                        navController.navigate(Screen.MainScreen.route) {
-                            popUpTo(Screen.LoginScreen.route) {
-                                inclusive = true
-                            }
-                        }
+                        navController.navigate(Graph.POSTS)
                     }
 
                     is ValidationEvent.Error -> {

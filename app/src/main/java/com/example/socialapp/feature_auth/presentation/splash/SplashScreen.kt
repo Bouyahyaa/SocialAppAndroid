@@ -24,6 +24,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.socialapp.core.util.Screen
 import com.example.socialapp.feature_auth.utils.ValidationEvent
+import com.example.socialapp.graphs.Graph
 import kotlinx.coroutines.delay
 
 @Composable
@@ -51,11 +52,7 @@ fun SplashScreen(
                 is ValidationEvent.Success -> {
                     Log.e("Success", event.message)
                     delay(3500L)
-                    navController.navigate(Screen.MainScreen.route) {
-                        popUpTo(Screen.SplashScreen.route) {
-                            inclusive = true
-                        }
-                    }
+                    navController.navigate(Graph.POSTS)
                 }
 
                 is ValidationEvent.Error -> {

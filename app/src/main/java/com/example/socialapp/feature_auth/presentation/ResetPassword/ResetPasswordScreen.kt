@@ -125,7 +125,7 @@ fun ResetPasswordScreen(
 
                             TextButton(onClick = {
                                 navController.navigate(Screen.LoginScreen.route) {
-                                    popUpTo(Screen.ResetPassword.route) {
+                                    popUpTo(Screen.ResetPasswordScreen.route) {
                                         inclusive = true
                                     }
                                 }
@@ -254,7 +254,7 @@ fun ResetPasswordScreen(
 
         BackHandler {
             navController.navigate(Screen.ForgetPasswordScreen.route) {
-                popUpTo(Screen.ResetPassword.route) {
+                popUpTo(Screen.ResetPasswordScreen.route) {
                     inclusive = true
                 }
             }
