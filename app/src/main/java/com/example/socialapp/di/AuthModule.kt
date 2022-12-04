@@ -1,6 +1,7 @@
 package com.example.socialapp.di
 
 import android.content.SharedPreferences
+import com.example.socialapp.core.util.Constants.BASE_URL
 import com.example.socialapp.feature_auth.data.remote.AuthApi
 import com.example.socialapp.feature_auth.data.remote.AuthRemoteDataSource
 import com.example.socialapp.feature_auth.data.repository.AuthRepositoryImpl
@@ -25,7 +26,7 @@ object AuthModule {
     @Singleton
     fun provideAuthApi(client: OkHttpClient): AuthApi {
         return Retrofit.Builder()
-            .baseUrl(AuthApi.BASE_URL)
+            .baseUrl(BASE_URL)
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
