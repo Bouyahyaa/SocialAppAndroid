@@ -12,6 +12,9 @@
         <entry key="app/src/main/res/drawable/baseline_mark_email_read_24.xml" value="0.2605" />
         <entry key="app/src/main/res/drawable/baseline_mark_email_unread_24.xml" value="0.328" />
         <entry key="app/src/main/res/drawable/baseline_phonelink_lock_24.xml" value="0.328" />
+        <entry key="app/src/main/res/drawable/ic_dashboard_black_24dp.xml" value="0.328" />
+        <entry key="app/src/main/res/drawable/ic_home_black_24dp.xml" value="0.328" />
+        <entry key="app/src/main/res/drawable/ic_notifications_black_24dp.xml" value="0.328" />
         <entry key="app/src/main/res/xml/network_security_config.xml" value="0.1" />
       </map>
     </option>
