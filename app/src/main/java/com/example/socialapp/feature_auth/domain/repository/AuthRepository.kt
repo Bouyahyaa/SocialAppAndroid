@@ -41,4 +41,5 @@ interface AuthRepository {
     ): Result
 
     suspend fun authenticate()
+    suspend fun logout()
 }

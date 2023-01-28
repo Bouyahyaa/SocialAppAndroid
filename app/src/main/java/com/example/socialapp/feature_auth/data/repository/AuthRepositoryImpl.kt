@@ -124,4 +124,9 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun authenticate() {
         return authRemoteDataSource.authenticate()
     }
+
+    override suspend fun logout() {
+        sharedPreferences.edit().remove("jwt").apply()
+        sharedPreferences.edit().remove("userId").apply()
+    }
 }

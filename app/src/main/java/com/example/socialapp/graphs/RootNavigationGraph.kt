@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.socialapp.feature_posts.presentation.BottomNavigationView
+import com.example.socialapp.feature_posts.presentation.PostsView
 
 @Composable
 fun RootNavigationGraph(navController: NavHostController) {
@@ -12,10 +12,12 @@ fun RootNavigationGraph(navController: NavHostController) {
         navController = navController,
         route = Graph.ROOT,
         startDestination = Graph.AUTHENTICATION
-    ){
+    ) {
         authNavGraph(navController = navController)
-        composable(route = Graph.POSTS){
-            BottomNavigationView()
+        composable(route = Graph.POSTS) {
+            PostsView(
+                authNavController = navController
+            )
         }
     }
 }
