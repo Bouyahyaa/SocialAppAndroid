@@ -33,7 +33,7 @@ fun TextFieldAuth(
     TextField(
         value = currentState,
         colors = TextFieldDefaults.textFieldColors(
-            backgroundColor = Color.LightGray,
+            backgroundColor = Color.LightGray.copy(alpha = 0.3f),
             cursorColor = Color.Black,
             disabledLabelColor = Color.LightGray,
             focusedIndicatorColor = Color.Transparent,
